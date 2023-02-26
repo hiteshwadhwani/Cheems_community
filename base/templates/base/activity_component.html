@@ -11,7 +11,7 @@
           </div>
           <p>
             @{{message.user}}
-            <span>{{message.created|timesince}} days ago</span>
+            <span>{{message.created|timesince}} ago</span>
           </p>
         </a>
         {% if request.user == message.user %}
@@ -28,7 +28,7 @@
         {% endif %}
       </div>
       <div class="activities__boxContent">
-        <p>replied to post “<a href="room.html">100 Days of code challenge!</a>”</p>
+        <p>replied to post <a href='{% url 'room' message.room.id %}'>{{message.room.name}}</a></p>
         <div class="activities__boxRoomContent">
             {{message}}
         </div>

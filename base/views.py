@@ -49,7 +49,7 @@ def registerUser(request):
     form = UserCreationForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = UserCreationForm(request.POST) 
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -103,32 +103,52 @@ def userProfile(request, pk):
     return render(request, 'base/profile_component.html', context)
 
 @login_required(login_url='login')
+def updateUser(request):
+    return render(request, 'base/update_user.html')
+
+@login_required(login_url='login')
 def create_room(request):
     form = RoomForm
+    topics = Topic.objects.all()
 
     if request.method == 'POST':
-        form = RoomForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    context = {'form':form}
+        topic_name = request.POST.get('topic')
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room  = Room.objects.create(
+            topic=topic,
+            host=request.user,
+            name=name,
+            description=description
+        )
+        return redirect('home')
+    context = {'form':form, 'topics':topics}
     return render(request, 'base/room_form.html', context)
 
 @login_required(login_url='login')
 def update_room(request, pk):
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room)
+    topics = Topic.objects.all()
 
     if request.user != room.host:
         return HttpResponse("You are not allowed here !")
 
     if request.method == 'POST':
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
+        topic_name = request.POST.get('topic')
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+
+        topic, created = Topic.objects.get_or_create(name=topic_name)
+        room.topic = topic
+        room.name = name
+        room.description = description
+        room.save()
+        return redirect('home')
     
-    context = {'form':form}
+    context = {'form':form, 'topics':topics, 'room':room}
     return render(request, 'base/room_form.html', context)
 
 @login_required(login_url='login')
