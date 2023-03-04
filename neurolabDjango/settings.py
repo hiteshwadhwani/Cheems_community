@@ -28,8 +28,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    "base.apps.BaseConfig"
+    "base.apps.BaseConfig",
+    'rest_framework',
 ]
+
+MEDIA_URL = '/images/'
+MEDIA_ROOT = BASE_DIR / 'static/img'
+
+AUTH_USER_MODEL = 'base.user'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

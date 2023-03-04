@@ -7,7 +7,7 @@
         <div class="room">
           <div class="room__top">
             <div class="room__topLeft">
-              <a href="index.html">
+              <a href="{% url 'home' %}">
                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                   <title>arrow-left</title>
                   <path
@@ -79,7 +79,7 @@
               </div>
               <div class="room__hosted">
                 <p>Hosted By</p>
-                <a href="#" class="room__author">
+                <a href="{% url 'user-profile' room.host.id %}" class="room__author">
                   <div class="avatar avatar--small">
                     <img src="https://randomuser.me/api/portraits/men/37.jpg" />
                   </div>

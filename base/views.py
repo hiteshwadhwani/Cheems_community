@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.http import HttpResponse
-from .forms import RoomForm
-from .models import Topic, Room, Message
-from django.contrib.auth.models import User
+from .forms import RoomForm, UserForm
+from .models import Topic, Room, Message, User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -104,7 +103,15 @@ def userProfile(request, pk):
 
 @login_required(login_url='login')
 def updateUser(request):
-    return render(request, 'base/update_user.html')
+    form = UserForm(instance=request.user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', request.user.id)
+    context = {'form':form}
+    return render(request, 'base/update_user.html', context)
 
 @login_required(login_url='login')
 def create_room(request):
@@ -175,3 +182,16 @@ def deleteMessage(request, pk):
         return redirect('room', message.room.id)
 
     return render(request, 'base/delete_room.html', {'room':message})
+
+
+def topics(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    topics = Topic.objects.filter(Q(name__icontains=q))
+    context = {'topics':topics}
+    return render(request, 'base/topic.html', context)
+
+
+def activity(request):
+    room_messages = Message.objects.all()
+    context = {'room_messages':room_messages}
+    return render(request, 'base/activity.html', context)
